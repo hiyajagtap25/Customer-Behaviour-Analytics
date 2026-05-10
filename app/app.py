@@ -67,7 +67,7 @@ def dashboard():
     top_pages    = df_to_list(get_top_pages(8))
 
     # Funnel AI insight (uses cache if available)
-    funnel_insight = get_insight('funnel')
+    funnel_insight = generate_insight('funnel')
 
     return render_template(
         "index.html",
@@ -87,7 +87,7 @@ def dashboard():
 def devices():
     device_breakdown = df_to_list(get_device_breakdown())
     device_share     = df_to_list(get_device_share())
-    device_insight   = get_insight('device')
+    device_insight   = generate_insight('device')
 
     return render_template(
         "devices.html",
@@ -106,7 +106,7 @@ def sources():
     source_perf    = df_to_list(get_source_performance())
     bounce_by_src  = df_to_list(get_bounce_by_source())
     converters     = df_to_list(get_converter_profile())
-    source_insight = get_insight('source')
+    source_insight = generate_insight('source')
 
     return render_template(
         "sources.html",
