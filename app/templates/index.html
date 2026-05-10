@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Conversion Intelligence{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>Funnel Dashboard</h1>
+  <p>Overall conversion performance across all sessions and traffic sources.</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid fade-up-2">
+  <div class="kpi-card kpi-purple">
+    <div class="kpi-label">Total Sessions</div>
+    <div class="kpi-value">{{ kpis.total_sessions | int }}</div>
+    <div class="kpi-sub">unique visits analysed</div>
+  </div>
+  <div class="kpi-card kpi-orange">
+    <div class="kpi-label">Conversion Rate</div>
+    <div class="kpi-value">{{ kpis.conversion_rate_pct }}%</div>
+    <div class="kpi-sub">{{ kpis.total_conversions | int }} conversions</div>
+  </div>
+  <div class="kpi-card kpi-green">
+    <div class="kpi-label">Biggest Drop-off</div>
+    <div class="kpi-value" style="font-size:22px; padding-top:6px;">Product Page</div>
+    <div class="kpi-sub">61.8% of sessions exit here</div>
+  </div>
+</div>
+
+<!-- AI Insight -->
+<div class="insight-card fade-up-3">
+  <div class="insight-tag">AI Insight — Funnel Analysis</div>
+  <p>{{ funnel_insight }}</p>
+</div>
+
+<!-- Funnel Chart + Stepwise table -->
+<div class="two-col fade-up-4">
+  <div class="card">
+    <div class="card-title">Funnel Drop-off <span class="badge">by stage</span></div>
+    <div class="chart-wrap">
+      <canvas id="funnelChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Step-by-step Drop Rate</div>
+    <table>
+      <thead><tr>
+        <th>Stage</th><th>Sessions</th><th>Drop from prev</th>
+      </tr></thead>
+      <tbody>
+        {% for row in stepwise %}
+        <tr>
+          <td>
+            <span class="pill pill-{{ row.last_step }}">{{ row.last_step }}</span>
+          </td>
+          <td style="font-family:var(--font-mono)">{{ row.sessions_reached }}</td>
+          <td style="font-family:var(--font-mono); color:
+            {% if row.drop_from_prev_pct > 50 %}var(--danger)
+            {% elif row.drop_from_prev_pct > 20 %}var(--warning)
+            {% else %}var(--muted){% endif %}">
+            {% if row.drop_from_prev_pct > 0 %}↓ {{ row.drop_from_prev_pct }}%
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Top pages -->
+<div class="card fade-up-4">
+  <div class="card-title">Top Pages by Visits</div>
+  <table>
+    <thead><tr><th>Page URL</th><th>Category</th><th>Hits</th></tr></thead>
+    <tbody>
+      {% for p in top_pages %}
+      <tr>
+        <td style="font-family:var(--font-mono); font-size:12px; color:var(--muted)">{{ p.page }}</td>
+        <td><span class="pill pill-{{ p.page_cat }}">{{ p.page_cat }}</span></td>
+        <td style="font-family:var(--font-mono)">{{ p.hits }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Data from Flask
+  const funnelData = {{ funnel | tojson }};
+
+  // Funnel bar chart
+  new Chart(document.getElementById('funnelChart'), {
+    type: 'bar',
+    data: {
+      labels: funnelData.map(d => d.drop_off),
+      datasets: [{
+        label: 'Sessions',
+        data: funnelData.map(d => d.sessions),
+        backgroundColor: ['#7c6af7','#f7826a','#f7c76a','#4af7c4'],
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#6b6b80', font: { family: 'DM Mono', size: 11 }},
+             grid: { color: '#22222e' }},
+        y: { ticks: { color: '#6b6b80', font: { family: 'DM Mono', size: 11 }},
+             grid: { color: '#22222e' }}
+      }
+    }
+  });
+</script>
+{% endblock %}
