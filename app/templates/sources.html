@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Traffic Sources — Conversion Intelligence{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>Traffic Sources</h1>
+  <p>Which channels bring users — and which ones actually convert.</p>
+</div>
+
+<!-- AI Insight -->
+<div class="insight-card fade-up-2">
+  <div class="insight-tag">AI Insight — Source Quality</div>
+  <p>{{ source_insight }}</p>
+</div>
+
+<!-- Two charts side by side -->
+<div class="two-col fade-up-3">
+  <div class="card">
+    <div class="card-title">Sessions by Source</div>
+    <div class="chart-wrap">
+      <canvas id="sessionsChart"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Bounce Rate by Source <span class="badge">%</span></div>
+    <div class="chart-wrap">
+      <canvas id="bounceChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Source performance table -->
+<div class="card fade-up-4">
+  <div class="card-title">Source Performance Summary</div>
+  <table>
+    <thead><tr>
+      <th>Source</th>
+      <th>Sessions</th>
+      <th>Avg Funnel Depth</th>
+      <th>Conversions</th>
+      <th>Conv. Rate</th>
+      <th>Bounce Rate</th>
+    </tr></thead>
+    <tbody>
+      {% for row in source_perf %}
+      {% set bounce_row = bounce_by_src | selectattr('source_group', 'eq', row.source_group) | first %}
+      <tr>
+        <td style="font-weight:500">{{ row.source_group }}</td>
+        <td style="font-family:var(--font-mono)">{{ row.total_sessions }}</td>
+        <td style="font-family:var(--font-mono)">
+          <!-- Depth bar -->
+          <div style="display:flex; align-items:center; gap:8px">
+            <div style="width:80px; height:6px; background:var(--border); border-radius:3px; overflow:hidden">
+              <div style="width:{{ (row.avg_funnel_depth / 4 * 100) | round }}%; height:100%;
+                           background:var(--accent); border-radius:3px"></div>
+            </div>
+            <span>{{ row.avg_funnel_depth }}</span>
+          </div>
+        </td>
+        <td style="font-family:var(--font-mono)">{{ row.conversions }}</td>
+        <td style="font-family:var(--font-mono); font-weight:600;
+          color: {% if row.conv_rate_pct >= 2 %}var(--success)
+                 {% elif row.conv_rate_pct >= 0.5 %}var(--warning)
+                 {% else %}var(--danger){% endif %}">
+          {{ row.conv_rate_pct }}%
+        </td>
+        <td style="font-family:var(--font-mono);
+          color: {% if bounce_row and bounce_row.bounce_rate_pct > 50 %}var(--danger)
+                 {% elif bounce_row and bounce_row.bounce_rate_pct > 30 %}var(--warning)
+                 {% else %}var(--muted){% endif %}">
+          {% if bounce_row %}{{ bounce_row.bounce_rate_pct }}%{% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Who actually converts -->
+<div class="card fade-up-4">
+  <div class="card-title">Converter Profile <span class="badge">sessions that purchased</span></div>
+  <table>
+    <thead><tr><th>Device</th><th>Source</th><th>Converted Sessions</th></tr></thead>
+    <tbody>
+      {% for row in converters %}
+      <tr>
+        <td style="text-transform:capitalize">{{ row.device_type }}</td>
+        <td>{{ row.source_group }}</td>
+        <td style="font-family:var(--font-mono); color:var(--success)">{{ row.converted_sessions }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const sourceData  = {{ source_perf | tojson }};
+  const bounceData  = {{ bounce_by_src | tojson }};
+  const SRC_COLORS  = ['#7c6af7','#f7826a','#4af7c4','#f7c76a','#f7566a'];
+
+  // Sessions bar chart
+  new Chart(document.getElementById('sessionsChart'), {
+    type: 'bar',
+    data: {
+      labels: sourceData.map(d => d.source_group),
+      datasets: [{
+        label: 'Sessions',
+        data: sourceData.map(d => d.total_sessions),
+        backgroundColor: SRC_COLORS,
+        borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color:'#6b6b80', font:{family:'DM Mono', size:10}}, grid:{display:false}},
+        y: { ticks: { color:'#6b6b80', font:{family:'DM Mono', size:11}}, grid:{color:'#22222e'}}
+      }
+    }
+  });
+
+  // Bounce rate bar chart
+  new Chart(document.getElementById('bounceChart'), {
+    type: 'bar',
+    data: {
+      labels: bounceData.map(d => d.source_group),
+      datasets: [{
+        label: 'Bounce Rate %',
+        data: bounceData.map(d => d.bounce_rate_pct),
+        backgroundColor: bounceData.map(d =>
+          d.bounce_rate_pct > 50 ? '#f7566a' :
+          d.bounce_rate_pct > 30 ? '#f7c76a' : '#4af7c4'),
+        borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color:'#6b6b80', font:{family:'DM Mono', size:10}}, grid:{display:false}},
+        y: { ticks: { color:'#6b6b80', font:{family:'DM Mono', size:11},
+                      callback: v => v + '%'}, grid:{color:'#22222e'}}
+      }
+    }
+  });
+</script>
+{% endblock %}
