@@ -34,7 +34,7 @@ from database.db_queries import (
     get_top_pages,
     get_converter_profile,
 )
-from ai_insights.insight_engine import get_all_insights, get_insight
+from ai_insights.insight_engine import get_all_insights,generate_insight
 from ai_insights.cache import clear_cache
 
 app = Flask(__name__)
