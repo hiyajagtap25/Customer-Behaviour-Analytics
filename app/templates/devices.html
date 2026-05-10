@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Device Analysis — Conversion Intelligence{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h1>Device Analysis</h1>
+  <p>How desktop, mobile, and tablet users move through the funnel differently.</p>
+</div>
+
+<!-- AI Insight -->
+<div class="insight-card fade-up-2">
+  <div class="insight-tag">AI Insight — Device Performance</div>
+  <p>{{ device_insight }}</p>
+</div>
+
+<!-- Device share donut + Conversion rate bar -->
+<div class="two-col fade-up-3">
+  <div class="card">
+    <div class="card-title">Traffic Share by Device</div>
+    <div class="chart-wrap">
+      <canvas id="deviceShareChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Conversion Rate by Device <span class="badge">%</span></div>
+    <div class="chart-wrap">
+      <canvas id="convRateChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Full breakdown table -->
+<div class="card fade-up-4">
+  <div class="card-title">Full Funnel Breakdown by Device</div>
+  <table>
+    <thead><tr>
+      <th>Device</th>
+      <th>Sessions</th>
+      <th>Bounced</th>
+      <th>Dropped at Product</th>
+      <th>Dropped at Cart</th>
+      <th>Reached Checkout</th>
+      <th>Conversions</th>
+      <th>Conv. Rate</th>
+    </tr></thead>
+    <tbody>
+      {% for row in device_breakdown %}
+      <tr>
+        <td style="font-weight:500; text-transform:capitalize">{{ row.device_type }}</td>
+        <td style="font-family:var(--font-mono)">{{ row.total_sessions }}</td>
+        <td style="font-family:var(--font-mono); color:var(--danger)">{{ row.bounced }}</td>
+        <td style="font-family:var(--font-mono); color:var(--accent2)">{{ row.dropped_at_product }}</td>
+        <td style="font-family:var(--font-mono); color:var(--warning)">{{ row.dropped_at_cart }}</td>
+        <td style="font-family:var(--font-mono); color:var(--accent3)">{{ row.reached_checkout }}</td>
+        <td style="font-family:var(--font-mono)">{{ row.conversions }}</td>
+        <td style="font-family:var(--font-mono); font-weight:600;
+          color: {% if row.conv_rate_pct >= 2 %}var(--success)
+                 {% elif row.conv_rate_pct >= 0.5 %}var(--warning)
+                 {% else %}var(--danger){% endif %}">
+          {{ row.conv_rate_pct }}%
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const shareData = {{ device_share | tojson }};
+  const breakdown = {{ device_breakdown | tojson }};
+
+  const COLORS = { desktop: '#7c6af7', mobile: '#f7826a', tablet: '#4af7c4' };
+  const bgColors = shareData.map(d => COLORS[d.device_type] || '#6b6b80');
+
+  // Donut chart
+  new Chart(document.getElementById('deviceShareChart'), {
+    type: 'doughnut',
+    data: {
+      labels: shareData.map(d => d.device_type),
+      datasets: [{ data: shareData.map(d => d.share_pct), backgroundColor: bgColors,
+                   borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom',
+          labels: { color: '#6b6b80', font: { family: 'DM Mono', size: 11 }, padding: 16 }}
+      }
+    }
+  });
+
+  // Conversion rate bar
+  new Chart(document.getElementById('convRateChart'), {
+    type: 'bar',
+    data: {
+      labels: breakdown.map(d => d.device_type),
+      datasets: [{
+        label: 'Conversion Rate %',
+        data: breakdown.map(d => d.conv_rate_pct),
+        backgroundColor: breakdown.map(d => COLORS[d.device_type] || '#6b6b80'),
+        borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#6b6b80', font: { family: 'DM Mono', size: 11 }},
+             grid: { display: false }},
+        y: { ticks: { color: '#6b6b80', font: { family: 'DM Mono', size: 11 },
+                      callback: v => v + '%' }, grid: { color: '#22222e' }}
+      }
+    }
+  });
+</script>
+{% endblock %}
