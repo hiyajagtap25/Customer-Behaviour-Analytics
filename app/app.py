@@ -1,20 +1,4 @@
-"""
-app.py
-------
-The Flask web application.
 
-Routes:
-    /           → Dashboard  (funnel chart + KPI cards + AI insight)
-    /devices    → Device analysis (mobile vs desktop breakdown)
-    /sources    → Traffic source analysis
-    /insights   → All 4 AI insights on one page
-    /api/refresh-insights → Clears cache and regenerates all insights (POST)
-
-Run with:
-    cd app
-    python app.py
-Then open http://127.0.0.1:5000 in your browser.
-"""
 
 import sys
 import os
@@ -54,17 +38,16 @@ from ai_insights.cache import clear_cache
 app = Flask(__name__)
 
 
-# ─────────────────────────────────────────────────
-# Helper: convert DataFrame to list of dicts for templates
-# ─────────────────────────────────────────────────
+#convert DataFrame to list of dicts for templates
+
 
 def df_to_list(df):
     return df.to_dict(orient='records')
 
 
-# ─────────────────────────────────────────────────
+
 # ROUTE 1: Dashboard
-# ─────────────────────────────────────────────────
+
 
 @app.route("/")
 def dashboard():
@@ -93,9 +76,8 @@ def dashboard():
     )
 
 
-# ─────────────────────────────────────────────────
+
 # ROUTE 2: Device Analysis
-# ─────────────────────────────────────────────────
 
 @app.route("/devices")
 def devices():
@@ -111,9 +93,9 @@ def devices():
     )
 
 
-# ─────────────────────────────────────────────────
+
 # ROUTE 3: Traffic Sources
-# ─────────────────────────────────────────────────
+
 
 @app.route("/sources")
 def sources():
@@ -131,9 +113,8 @@ def sources():
     )
 
 
-# ─────────────────────────────────────────────────
 # ROUTE 4: All Insights
-# ─────────────────────────────────────────────────
+
 
 @app.route("/insights")
 def insights():
@@ -141,10 +122,10 @@ def insights():
     return render_template("insights.html", insights=all_insights)
 
 
-# ─────────────────────────────────────────────────
+
 # ROUTE 5: Refresh Insights (POST)
 # Called by the "Regenerate" button on insights page
-# ─────────────────────────────────────────────────
+
 
 @app.route("/api/refresh-insights", methods=["POST"])
 def refresh_insights():

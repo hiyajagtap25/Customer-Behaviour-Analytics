@@ -27,9 +27,6 @@ from database.db_queries import (
 )
 
 
-# ══════════════════════════════════════════════════════════════
-# LOAD ENV VARIABLES
-# ══════════════════════════════════════════════════════════════
 
 load_dotenv()
 
@@ -38,9 +35,9 @@ client = Groq(
 )
 
 
-# ══════════════════════════════════════════════════════════════
+
 # GENERIC AI CALL
-# ══════════════════════════════════════════════════════════════
+
 
 def generate_insight(prompt):
     """
@@ -77,9 +74,8 @@ def generate_insight(prompt):
         return f"AI insight unavailable: {str(e)}"
 
 
-# ══════════════════════════════════════════════════════════════
 # FUNNEL INSIGHT
-# ══════════════════════════════════════════════════════════════
+
 
 def get_funnel_insight(refresh=True):
 
@@ -113,9 +109,8 @@ def get_funnel_insight(refresh=True):
     return insight
 
 
-# ══════════════════════════════════════════════════════════════
 # DEVICE INSIGHT
-# ══════════════════════════════════════════════════════════════
+
 
 def get_device_insight(refresh=True):
 
@@ -142,9 +137,8 @@ def get_device_insight(refresh=True):
     return insight
 
 
-# ══════════════════════════════════════════════════════════════
 # SOURCE INSIGHT
-# ══════════════════════════════════════════════════════════════
+
 
 def get_source_insight(refresh=True):
 
@@ -194,9 +188,8 @@ TOP CONVERTER PROFILE:
     return insight
 
 
-# ══════════════════════════════════════════════════════════════
 # PAGE INSIGHT
-# ══════════════════════════════════════════════════════════════
+
 
 def get_page_insight(refresh=True):
 
@@ -241,9 +234,8 @@ STAGE REACH DATA:
     return insight
 
 
-# ══════════════════════════════════════════════════════════════
 # GET ALL INSIGHTS
-# ══════════════════════════════════════════════════════════════
+
 
 def get_all_insights(refresh=True):
 
@@ -255,9 +247,8 @@ def get_all_insights(refresh=True):
     }
 
 
-# ══════════════════════════════════════════════════════════════
 # REFRESH ALL INSIGHTS
-# ══════════════════════════════════════════════════════════════
+
 
 def refresh_all_insights():
 
@@ -272,9 +263,9 @@ def refresh_all_insights():
     return insights
 
 
-# ══════════════════════════════════════════════════════════════
+
 # STANDALONE TEST
-# ══════════════════════════════════════════════════════════════
+
 
 if __name__ == "__main__":
 
