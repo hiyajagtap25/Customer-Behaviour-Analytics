@@ -277,6 +277,52 @@
     .fade-up-2 { animation: fadeUp 0.4s 0.1s ease forwards; opacity: 0; }
     .fade-up-3 { animation: fadeUp 0.4s 0.2s ease forwards; opacity: 0; }
     .fade-up-4 { animation: fadeUp 0.4s 0.3s ease forwards; opacity: 0; }
+
+    @media (max-width: 768px) {
+
+  nav.sidebar {
+    width: 70px;
+    padding: 20px 10px;
+  }
+
+  .nav-logo,
+  .nav-section-label,
+  nav.sidebar a {
+    font-size: 0;
+  }
+
+  nav.sidebar .icon {
+    font-size: 18px;
+  }
+
+  main {
+    margin-left: 70px;
+    padding: 20px;
+  }
+
+  .kpi-grid,
+  .two-col,
+  .three-col {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .chart-wrap,
+  .chart-wrap-tall {
+    height: 250px;
+  }
+}
   </style>
 </head>
 <body>
