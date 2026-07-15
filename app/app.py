@@ -18,7 +18,21 @@ Then open http://127.0.0.1:5000 in your browser.
 
 import sys
 import os
+try:
+    from ai_insights.insight_engine import (
+        get_all_insights,
+        get_funnel_insight,
+        get_device_insight,
+        get_source_insight,
+        get_page_insight
+    )
+except Exception as e:
+    print("IMPORT ERROR:")
+    print(type(e).__name__)
+    print(str(e))
+    raise
 
+print("Imports loaded successfully")
 # Make parent folder importable so we can reach database/ and ai_insights/
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -67,7 +81,7 @@ def dashboard():
     top_pages    = df_to_list(get_top_pages(8))
 
     # Funnel AI insight (uses cache if available)
-    funnel_insight = generate_insight('funnel')
+    funnel_insight = get_funnel_insight()
 
     return render_template(
         "index.html",
@@ -87,7 +101,7 @@ def dashboard():
 def devices():
     device_breakdown = df_to_list(get_device_breakdown())
     device_share     = df_to_list(get_device_share())
-    device_insight   = generate_insight('device')
+    device_insight = get_device_insight()
 
     return render_template(
         "devices.html",
@@ -106,7 +120,7 @@ def sources():
     source_perf    = df_to_list(get_source_performance())
     bounce_by_src  = df_to_list(get_bounce_by_source())
     converters     = df_to_list(get_converter_profile())
-    source_insight = generate_insight('source')
+    source_insight = get_source_insight()
 
     return render_template(
         "sources.html",
@@ -136,7 +150,7 @@ def insights():
 def refresh_insights():
     try:
         clear_cache()
-        new_insights = get_all_insights(force_refresh=True)
+        new_insights = get_all_insights(refresh=True)
         return jsonify({"status": "ok", "insights": new_insights})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

@@ -67,7 +67,7 @@ def generate_insight(prompt):
                 }
             ],
 
-            temperature=0.4,
+            temperature=0.6,
             max_tokens=220
         )
 
@@ -81,7 +81,7 @@ def generate_insight(prompt):
 # FUNNEL INSIGHT
 # ══════════════════════════════════════════════════════════════
 
-def get_funnel_insight(refresh=False):
+def get_funnel_insight(refresh=True):
 
     cache = load_cache()
 
@@ -117,7 +117,7 @@ def get_funnel_insight(refresh=False):
 # DEVICE INSIGHT
 # ══════════════════════════════════════════════════════════════
 
-def get_device_insight(refresh=False):
+def get_device_insight(refresh=True):
 
     cache = load_cache()
 
@@ -146,7 +146,7 @@ def get_device_insight(refresh=False):
 # SOURCE INSIGHT
 # ══════════════════════════════════════════════════════════════
 
-def get_source_insight(refresh=False):
+def get_source_insight(refresh=True):
 
     cache = load_cache()
 
@@ -198,7 +198,7 @@ TOP CONVERTER PROFILE:
 # PAGE INSIGHT
 # ══════════════════════════════════════════════════════════════
 
-def get_page_insight(refresh=False):
+def get_page_insight(refresh=True):
 
     cache = load_cache()
 
@@ -245,7 +245,7 @@ STAGE REACH DATA:
 # GET ALL INSIGHTS
 # ══════════════════════════════════════════════════════════════
 
-def get_all_insights(refresh=False):
+def get_all_insights(refresh=True):
 
     return {
         "funnel": get_funnel_insight(refresh),

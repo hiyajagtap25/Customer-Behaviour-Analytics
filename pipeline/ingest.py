@@ -63,5 +63,5 @@ def load_raw_data(filepath):
 
 # Quick test — run this file directly to verify
 if __name__ == "__main__":
-    df = load_raw_data(r"C:\Users\dell\Desktop\Customer-Behaviour-Analytics\data\raw.csv")
+    df = load_raw_data(r"data\raw.csv")
     print(df.head(3))

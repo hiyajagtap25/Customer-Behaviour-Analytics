@@ -1,1 +1,12 @@
 .env
+
+venv/
+.venv/
+.venv-1/
+
+__pycache__/
+*.pyc
+
+.vscode/
+
+ai_cache.json

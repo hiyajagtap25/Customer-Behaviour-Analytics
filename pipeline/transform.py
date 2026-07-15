@@ -149,7 +149,7 @@ def transform(df):
 if __name__ == "__main__":
     from ingest import load_raw_data
 
-    raw = load_raw_data(r"C:\Users\dell\Desktop\Customer-Behaviour-Analytics\data\raw.csv")
+    raw = load_raw_data(r"data/raw.csv")
     raw_events, session_funnel = transform(raw)
 
     print("\nSample rows from session_funnel:")
